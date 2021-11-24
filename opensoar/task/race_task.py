@@ -78,16 +78,15 @@ class RaceTask(Task):
         return distances
 
     def apply_rules(self, trace):
-
         fixes, outlanding_fix = self.determine_trip_fixes(trace)
-        distances = self.determine_trip_distances(fixes, outlanding_fix)
-        refined_start = self.determine_refined_start(trace, fixes)
-        finish_time = fixes[-1]['time']
-
-        return fixes, refined_start, outlanding_fix, distances, finish_time
+        if len(fixes) > 0:
+            distances = self.determine_trip_distances(fixes, outlanding_fix)
+            refined_start = self.determine_refined_start(trace, fixes)
+            finish_time = fixes[-1]['time']
+            return fixes, refined_start, outlanding_fix, distances, finish_time
+        return [], None, None, [0, 0], None
 
     def determine_trip_fixes(self, trace):
-
         leg = -1
         enl_first_fix = None
         enl_registered = False
@@ -134,7 +133,7 @@ class RaceTask(Task):
         enl_fix = enl_first_fix if enl_registered else None
 
         outlanding_fix = None
-        if len(fixes) is not len(self.waypoints):
+        if len(fixes) > 0 and len(fixes) is not len(self.waypoints):
             outlanding_fix = self.determine_outlanding_fix(trace, fixes, start_fixes, enl_fix)
 
         return fixes, outlanding_fix
